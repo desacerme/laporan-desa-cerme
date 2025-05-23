@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DESA X - Sistem Laporan Masyarakat</title>
-    <meta name="description" content="Sistem Laporan Masyarakat Desa X - Sampaikan aspirasi dan keluhan Anda untuk kemajuan desa bersama">
+    <title>Desa Cerma - Sistem Laporan Masyarakat</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -276,8 +276,31 @@
             color: #4b5563;
         }
 
+        /* Form Container dengan Margin Top yang Lebih Besar */
         .form-container {
-            padding: 40px 30px;
+            padding: 60px 30px 40px; /* Increased top padding from 40px to 60px */
+            margin-top: 40px; /* Added margin-top */
+        }
+
+        .form-section-title {
+            text-align: center;
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out 0.8s forwards;
+        }
+
+        .form-section-title h2 {
+            font-size: 28px;
+            color: #1f2937;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .form-section-title p {
+            font-size: 16px;
+            color: #6b7280;
+            line-height: 1.6;
         }
 
         .form-row {
@@ -299,10 +322,10 @@
             animation: slideInRight 0.6s ease-out forwards;
         }
 
-        .form-group:nth-child(1) { animation-delay: 0.1s; }
-        .form-group:nth-child(2) { animation-delay: 0.2s; }
-        .form-group:nth-child(3) { animation-delay: 0.3s; }
-        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(1) { animation-delay: 1s; }
+        .form-group:nth-child(2) { animation-delay: 1.1s; }
+        .form-group:nth-child(3) { animation-delay: 1.2s; }
+        .form-group:nth-child(4) { animation-delay: 1.3s; }
 
         @keyframes slideInLeft {
             to {
@@ -393,7 +416,7 @@
             border-left: 4px solid #667eea;
             opacity: 0;
             transform: scale(0.9);
-            animation: scaleIn 0.6s ease-out 1s forwards;
+            animation: scaleIn 0.6s ease-out 1.5s forwards;
             transition: all 0.3s ease;
         }
 
@@ -449,7 +472,7 @@
             overflow: hidden;
             opacity: 0;
             transform: translateY(30px);
-            animation: slideInUp 0.6s ease-out 1.2s forwards;
+            animation: slideInUp 0.6s ease-out 1.7s forwards;
         }
 
         .submit-btn::before {
@@ -632,19 +655,27 @@
             100% { height: 10px; }
         }
 
-        /* Shake animation */
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        /* Error message */
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            display: none;
         }
 
-        /* Ripple effect */
-        @keyframes ripple {
-            to {
-                transform: scale(4);
-                opacity: 0;
-            }
+        .success-message {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-size: 14px;
+            display: none;
         }
 
         /* Mobile Responsive */
@@ -693,7 +724,16 @@
             }
 
             .form-container {
-                padding: 25px 20px;
+                padding: 40px 20px 25px; /* Adjusted padding for mobile */
+                margin-top: 20px; /* Reduced margin-top for mobile */
+            }
+
+            .form-section-title h2 {
+                font-size: 24px;
+            }
+
+            .form-section-title p {
+                font-size: 15px;
             }
 
             .form-row {
@@ -741,7 +781,12 @@
             }
 
             .form-container {
-                padding: 20px 15px;
+                padding: 30px 15px 20px; /* Further adjusted for smaller screens */
+                margin-top: 15px;
+            }
+
+            .form-section-title h2 {
+                font-size: 22px;
             }
 
             input, select, textarea {
@@ -789,7 +834,7 @@
             <div class="header-icon">
                 <i class="fas fa-landmark"></i>
             </div>
-            <h1>DESA X</h1>
+            <h1>Desa Cerma</h1>
             <p>Sistem Laporan Masyarakat<br>Sampaikan aspirasi dan keluhan Anda untuk kemajuan desa bersama</p>
         </div>
 
@@ -819,16 +864,18 @@
         </div>
 
         <!-- Form -->
-        <div class="form-container" id="form">
-            <form name="laporan-desa" method="POST" data-netlify="true" data-netlify-honeypot="bot-field" id="reportForm">
-                <!-- Hidden honeypot field untuk spam protection -->
-                <p style="display: none;">
-                    <label>Don't fill this out if you're human: <input name="bot-field" /></label>
-                </p>
-                
-                <!-- Hidden field untuk Netlify -->
-                <input type="hidden" name="form-name" value="laporan-desa" />
-                
+        <div class="form-container">
+            <!-- Form Section Title -->
+            <div class="form-section-title">
+                <h2><i class="fas fa-edit"></i> Form Laporan Masyarakat</h2>
+                <p>Silakan isi form di bawah ini dengan lengkap dan jelas untuk mempermudah proses penanganan laporan Anda</p>
+            </div>
+
+            <!-- Error & Success Messages -->
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+
+            <form id="reportForm">
                 <div class="form-row">
                     <div class="form-group">
                         <label><i class="fas fa-user"></i>Nama Lengkap</label>
@@ -894,7 +941,7 @@
 
                 <div class="checkbox-group">
                     <input type="checkbox" id="agreement" name="agreement" required>
-                    <label for="agreement">Saya menyetujui bahwa data yang saya berikan adalah benar dan dapat digunakan oleh Pemerintah Desa X untuk tindak lanjut laporan ini.</label>
+                    <label for="agreement">Saya menyetujui bahwa data yang saya berikan adalah benar dan dapat digunakan oleh Pemerintah Desa Cerma untuk tindak lanjut laporan ini.</label>
                 </div>
 
                 <button type="submit" class="submit-btn">
@@ -908,41 +955,52 @@
             <div class="footer-content">
                 <div class="footer-item">
                     <i class="fas fa-user-tie"></i>
-                    <h4>Kepala Desa X</h4>
-                    <p>Bpk. [Nama Kepala Desa]<br>kepala.desa@desax.co.id</p>
-                </div>
-                <div class="footer-item">
-                    <i class="fas fa-clock"></i>
-                    <h4>Jam Pelayanan</h4>
-                    <p>Senin - Jumat<br>08:00 - 16:00 WIB</p>
-                </div>
-                <div class="footer-item">
-                    <i class="fas fa-phone-alt"></i>
-                    <h4>Kontak Darurat</h4>
-                    <p>(021) 123-4567<br>24 Jam Siaga</p>
-                </div>
-            </div>
-            <div class="copyright">
-                © 2024 Pemerintah Desa X. Melayani dengan Hati untuk Kemajuan Bersama.
-            </div>
-        </div>
-    </div>
+                   <h4>Kepala Desa Cerma</h4>
+                   <p>Bpk. [Nama Kepala Desa]<br>kepala.desa@desax.co.id</p>
+               </div>
+               <div class="footer-item">
+                   <i class="fas fa-clock"></i>
+                   <h4>Jam Pelayanan</h4>
+                   <p>Senin - Jumat<br>08:00 - 16:00 WIB</p>
+               </div>
+               <div class="footer-item">
+                   <i class="fas fa-phone-alt"></i>
+                   <h4>Kontak Darurat</h4>
+                   <p>(021) 123-4567<br>24 Jam Siaga</p>
+               </div>
+           </div>
+           <div class="copyright">
+               © 2024 Pemerintah Desa Cerma. Melayani dengan Hati untuk Kemajuan Bersama.
+           </div>
+       </div>
+   </div>
 
-    <div class="made-with">
-        <i class="fas fa-code"></i> Made with ❤️
-    </div>
+   <div class="made-with">
+       <i class="fas fa-code"></i> Made with ❤️
+   </div>
 
-    <script>
-        // Create floating particles
-        function createParticles() {
-            const particlesContainer = document.getElementById('particles');
-            const particleCount = 15;
+   <script>
+       // EmailJS Configuration
+       // GANTI DENGAN CREDENTIALS ANDA SENDIRI
+       const EMAILJS_PUBLIC_KEY = "0q1e5RBLnsIgQM2uw"; // Dapatkan dari emailjs.com
+       const EMAILJS_SERVICE_ID = "service_yjj7rpa"; // Contoh: "service_abc123"
+       const EMAILJS_TEMPLATE_ID = "template_w12ie4l"; // Contoh: "template_xyz456"
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                
-                // Random size between 4px and 12px
+       // Initialize EmailJS
+       (function() {
+           emailjs.init(EMAILJS_PUBLIC_KEY);
+       })();
+
+       // Create floating particles
+       function createParticles() {
+           const particlesContainer = document.getElementById('particles');
+           const particleCount = 15;
+
+           for (let i = 0; i < particleCount; i++) {
+               const particle = document.createElement('div');
+               particle.className = 'particle';
+               
+               // Random size between 4px and 12px
                const size = Math.random() * 8 + 4;
                particle.style.width = size + 'px';
                particle.style.height = size + 'px';
@@ -963,12 +1021,32 @@
        // Initialize particles
        createParticles();
 
-       // Form validation and enhancement for Netlify
+       // Show message function
+       function showMessage(type, message) {
+           const errorDiv = document.getElementById('errorMessage');
+           const successDiv = document.getElementById('successMessage');
+           
+           // Hide both messages first
+           errorDiv.style.display = 'none';
+           successDiv.style.display = 'none';
+           
+           if (type === 'error') {
+               errorDiv.textContent = message;
+               errorDiv.style.display = 'block';
+               errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+           } else if (type === 'success') {
+               successDiv.textContent = message;
+               successDiv.style.display = 'block';
+               successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+           }
+       }
+
+       // Form submission with EmailJS
        document.getElementById('reportForm').addEventListener('submit', function(e) {
+           e.preventDefault();
+           
            const agreement = document.getElementById('agreement');
            if (!agreement.checked) {
-               e.preventDefault();
-               
                // Animate shake effect for checkbox
                const checkboxGroup = document.querySelector('.checkbox-group');
                checkboxGroup.style.animation = 'shake 0.5s ease-in-out';
@@ -976,84 +1054,74 @@
                    checkboxGroup.style.animation = '';
                }, 500);
                
-               // Show custom alert
-               showCustomAlert('Mohon centang persetujuan untuk melanjutkan.');
+               showMessage('error', 'Mohon centang persetujuan untuk melanjutkan.');
                return;
            }
            
-           // Show loading state
+           // Validate EmailJS configuration
+           if (!EMAILJS_PUBLIC_KEY || !EMAILJS_SERVICE_ID || !EMAILJS_TEMPLATE_ID ||
+               EMAILJS_PUBLIC_KEY === "YOUR_EMAILJS_PUBLIC_KEY") {
+               showMessage('error', 'Konfigurasi EmailJS belum lengkap. Hubungi administrator.');
+               return;
+           }
+           
+           // Show loading state with animation
            const submitBtn = document.querySelector('.submit-btn');
            const originalContent = submitBtn.innerHTML;
            submitBtn.innerHTML = '<span class="loading"></span> Mengirim Laporan...';
            submitBtn.disabled = true;
            
-           // Show success message after form submission
-           setTimeout(() => {
-               submitBtn.innerHTML = '<span class="success-checkmark"></span> Laporan Terkirim!';
-               submitBtn.style.background = 'linear-gradient(135deg, #10b981, #047857)';
-               
-               // Redirect to thank you page
-               setTimeout(() => {
-                   window.location.href = 'thank-you.html';
-               }, 1500);
-           }, 2000);
+           // Hide any previous messages
+           document.getElementById('errorMessage').style.display = 'none';
+           document.getElementById('successMessage').style.display = 'none';
+           
+           // Prepare template parameters
+           const formData = new FormData(this);
+           const templateParams = {
+               nama: formData.get('nama'),
+               telepon: formData.get('telepon'),
+               email: formData.get('email'),
+               alamat: formData.get('alamat'),
+               jenis_laporan: formData.get('jenis_laporan'),
+               judul: formData.get('judul'),
+               detail: formData.get('detail'),
+               tanggal: formData.get('tanggal'),
+               urgensi: formData.get('urgensi'),
+               timestamp: new Date().toLocaleString('id-ID'),
+               to_email: 'admin@desax.co.id' // Email tujuan
+           };
+           
+           // Send email using EmailJS
+           emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+               .then(function(response) {
+                   console.log('SUCCESS!', response.status, response.text);
+                   
+                   // Show success animation
+                   submitBtn.innerHTML = '<span class="success-checkmark"></span> Laporan Terkirim!';
+                   submitBtn.style.background = 'linear-gradient(135deg, #10b981, #047857)';
+                   
+                   showMessage('success', 'Laporan Anda berhasil dikirim! Tim kami akan segera menindaklanjuti dalam 1×24 jam.');
+                   
+                   // Reset form
+                   document.getElementById('reportForm').reset();
+                   
+                   // Reset button after 3 seconds
+                   setTimeout(() => {
+                       submitBtn.innerHTML = originalContent;
+                       submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                       submitBtn.disabled = false;
+                   }, 3000);
+                   
+               }, function(error) {
+                   console.log('FAILED...', error);
+                   
+                   showMessage('error', 'Gagal mengirim laporan: ' + (error.text || 'Terjadi kesalahan jaringan.'));
+                   
+                   // Reset button
+                   submitBtn.innerHTML = originalContent;
+                   submitBtn.disabled = false;
+               });
        });
-
-       // Custom alert function
-       function showCustomAlert(message) {
-           // Create alert overlay
-           const alertOverlay = document.createElement('div');
-           alertOverlay.style.cssText = `
-               position: fixed;
-               top: 0;
-               left: 0;
-               width: 100%;
-               height: 100%;
-               background: rgba(0, 0, 0, 0.5);
-               display: flex;
-               align-items: center;
-               justify-content: center;
-               z-index: 10000;
-               animation: fadeIn 0.3s ease-out;
-           `;
-           
-           // Create alert box
-           const alertBox = document.createElement('div');
-           alertBox.style.cssText = `
-               background: white;
-               padding: 30px;
-               border-radius: 15px;
-               box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-               text-align: center;
-               max-width: 400px;
-               margin: 20px;
-               animation: slideInUp 0.3s ease-out;
-           `;
-           
-           alertBox.innerHTML = `
-               <div style="color: #ef4444; font-size: 48px; margin-bottom: 15px;">
-                   <i class="fas fa-exclamation-triangle"></i>
-               </div>
-               <h3 style="color: #1f2937; margin-bottom: 15px; font-size: 18px;">Perhatian!</h3>
-               <p style="color: #6b7280; margin-bottom: 20px; line-height: 1.5;">${message}</p>
-               <button onclick="this.parentElement.parentElement.remove()" 
-                       style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
-                              color: white; border: none; padding: 10px 20px; 
-                              border-radius: 8px; cursor: pointer; font-weight: 600;">
-                   Mengerti
-               </button>
-           `;
-           
-           alertOverlay.appendChild(alertBox);
-           document.body.appendChild(alertOverlay);
-           
-           // Auto remove after 5 seconds
-           setTimeout(() => {
-               if (alertOverlay.parentNode) {
-                   alertOverlay.remove();
-               }
-           }, 5000);
-       }
 
        // Phone number formatting with animation
        document.querySelector('input[name="telepon"]').addEventListener('input', function(e) {
@@ -1069,7 +1137,7 @@
                setTimeout(() => {
                    this.style.transform = '';
                    this.style.borderColor = '#e5e7eb';
-               }, 200);
+               }, 300);
            }
            e.target.value = value;
        });
@@ -1261,60 +1329,28 @@
 
        animateCounters();
 
-       // Email validation with real-time feedback
-       document.querySelector('input[name="email"]').addEventListener('input', function(e) {
-           const email = e.target.value;
-           const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-           
-           if (email.length > 0) {
-               if (emailRegex.test(email)) {
-                   this.style.borderColor = '#10b981';
-                   this.style.background = 'linear-gradient(135deg, #ecfdf5 0%, #ffffff 100%)';
-               } else {
-                   this.style.borderColor = '#f59e0b';
-                   this.style.background = 'linear-gradient(135deg, #fffbeb 0%, #ffffff 100%)';
+       // Add shake animation keyframes
+       const shakeKeyframes = `
+           @keyframes shake {
+               0%, 100% { transform: translateX(0); }
+               10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+               20%, 40%, 60%, 80% { transform: translateX(5px); }
+           }
+       `;
+       
+       const rippleKeyframes = `
+           @keyframes ripple {
+               to {
+                   transform: scale(4);
+                   opacity: 0;
                }
-           } else {
-               this.style.borderColor = '#e5e7eb';
-               this.style.background = '';
            }
-       });
-
-       // Form progress indicator
-       function updateFormProgress() {
-           const requiredFields = document.querySelectorAll('input[required], select[required], textarea[required]');
-           const filledFields = Array.from(requiredFields).filter(field => field.value.trim() !== '');
-           const progress = Math.round((filledFields.length / requiredFields.length) * 100);
-           
-           // Create or update progress bar
-           let progressBar = document.querySelector('.form-progress');
-           if (!progressBar) {
-               progressBar = document.createElement('div');
-               progressBar.className = 'form-progress';
-               progressBar.style.cssText = `
-                   position: fixed;
-                   top: 0;
-                   left: 0;
-                   width: ${progress}%;
-                   height: 3px;
-                   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                   transition: width 0.3s ease;
-                   z-index: 1001;
-               `;
-               document.body.appendChild(progressBar);
-           } else {
-               progressBar.style.width = progress + '%';
-           }
-       }
-
-       // Add progress tracking to all form fields
-       document.querySelectorAll('input, select, textarea').forEach(field => {
-           field.addEventListener('input', updateFormProgress);
-           field.addEventListener('change', updateFormProgress);
-       });
-
-       // Initialize progress
-       updateFormProgress();
+       `;
+       
+       // Add keyframes to document
+       const style = document.createElement('style');
+       style.textContent = shakeKeyframes + rippleKeyframes;
+       document.head.appendChild(style);
 
        // Disable animations for users who prefer reduced motion
        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -1322,36 +1358,22 @@
                el.style.animationDuration = '0.01ms';
                el.style.transitionDuration = '0.01ms';
            });
-           
-           // Hide particles
-           document.getElementById('particles').style.display = 'none';
        }
 
-       // Add keyboard navigation support
-       document.addEventListener('keydown', function(e) {
-           if (e.key === 'Tab') {
-               document.body.classList.add('keyboard-navigation');
-           }
-       });
-
-       document.addEventListener('mousedown', function() {
-           document.body.classList.remove('keyboard-navigation');
-       });
-
-       // Add focus styles for keyboard navigation
-       const style = document.createElement('style');
-       style.textContent = `
-           .keyboard-navigation *:focus {
-               outline: 2px solid #667eea !important;
-               outline-offset: 2px !important;
-           }
-       `;
-       document.head.appendChild(style);
-
-       // Console log for developers
-       console.log('%c🏛️ Desa X - Sistem Laporan Masyarakat', 'color: #667eea; font-size: 16px; font-weight: bold;');
-       console.log('%cWebsite ini menggunakan Netlify Forms untuk menangani form submissions', 'color: #6b7280;');
-       console.log('%cDeveloped with ❤️ for better community services', 'color: #10b981;');
+       // Print form data for debugging (remove in production)
+       function debugFormData() {
+           const form = document.getElementById('reportForm');
+           form.addEventListener('change', function() {
+               const formData = new FormData(form);
+               console.log('Form Data:');
+               for (let [key, value] of formData.entries()) {
+                   console.log(key, value);
+               }
+           });
+       }
+       
+       // Uncomment for debugging
+       // debugFormData();
    </script>
 </body>
 </html>
